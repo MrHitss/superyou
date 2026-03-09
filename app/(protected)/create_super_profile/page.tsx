@@ -7,8 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Sortable } from '@/components/ui/sortable';
 import { ContentBlockRow } from '@/components/superyou/content-block-row';
 import { QuickAddsModal } from '@/components/superyou/quick-adds-modal';
+import { CarouselAddCardModal } from '@/components/superyou/carousel-add-card-modal';
+import { CarouselCardEditSheet } from '@/components/superyou/carousel-card-edit-sheet';
+import { CarouselCardEditModal } from '@/components/superyou/carousel-card-edit-modal';
+import { WhatsAppChatLinkModal } from '@/components/superyou/whatsapp-chat-link-modal';
 import { Link2, Plus } from 'lucide-react';
-import type { ContentBlock } from '@/features/superyou/content-blocks/types';
+import type {
+  ContentBlock,
+  CarouselBlock,
+  CarouselCard,
+  CarouselCardBlockType,
+} from '@/features/superyou/content-blocks/types';
 
 const INITIAL_BLOCKS: ContentBlock[] = [
   {
@@ -51,15 +60,37 @@ const INITIAL_BLOCKS: ContentBlock[] = [
     order: 4,
     title: 'Enter carousel title',
     cards: [
-      { id: 'c1', title: 'Card 1' },
-      { id: 'c2', title: 'Marketing Guide' },
+      { id: 'c1', blockType: 'link', title: 'Card 1', url: '#' },
+      { id: 'c2', blockType: 'link', title: 'Marketing Guide', url: '#' },
     ],
   },
 ];
 
+function createDefaultCarouselCard(blockType: CarouselCardBlockType): CarouselCard {
+  const id = `card-${Date.now()}`;
+  switch (blockType) {
+    case 'link':
+      return { id, blockType: 'link', title: 'New link', url: '#' };
+    case 'whatsapp':
+      return { id, blockType: 'whatsapp', title: 'WhatsApp', phone_code: '', number: '' };
+    case 'form':
+      return { id, blockType: 'form', title: 'Form', form_id: '' };
+    default:
+      return { id, blockType: 'link', title: 'New card', url: '#' };
+  }
+}
+
 export default function CreateSuperProfilePage() {
   const [activeTab, setActiveTab] = useState('store');
   const [quickAddsOpen, setQuickAddsOpen] = useState(false);
+  const [carouselAddCardBlock, setCarouselAddCardBlock] = useState<CarouselBlock | null>(null);
+  const [cardEditState, setCardEditState] = useState<{ block: CarouselBlock; card: CarouselCard } | null>(null);
+  const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
+  const [whatsappModalCarouselContext, setWhatsappModalCarouselContext] = useState<{
+    block: CarouselBlock;
+    card: CarouselCard | null;
+  } | null>(null);
+  const [carouselCardEditModalState, setCarouselCardEditModalState] = useState<{ block: CarouselBlock; card: CarouselCard } | null>(null);
   const [blocks, setBlocks] = useState<ContentBlock[]>(INITIAL_BLOCKS);
 
   const getItemValue = useCallback((block: ContentBlock) => block.id, []);
@@ -121,19 +152,130 @@ export default function CreateSuperProfilePage() {
 
   const handleAddCard = useCallback((block: ContentBlock) => {
     if (block.type !== 'carousel') return;
-    const newCard = { id: `card-${Date.now()}`, title: 'New card' };
+    setCarouselAddCardBlock(block);
+  }, []);
+
+  const handleCarouselAddCardSelect = useCallback(
+    (blockType: CarouselCardBlockType) => {
+      if (!carouselAddCardBlock) return;
+      if (blockType === 'whatsapp') {
+        setWhatsappModalCarouselContext({ block: carouselAddCardBlock, card: null });
+        setCarouselAddCardBlock(null);
+        setWhatsappModalOpen(true);
+        return;
+      }
+      const newCard = createDefaultCarouselCard(blockType);
+      setBlocks((prev) =>
+        prev.map((b) =>
+          b.id === carouselAddCardBlock.id && b.type === 'carousel'
+            ? { ...b, cards: [...b.cards, newCard] }
+            : b,
+        ),
+      );
+      setCarouselAddCardBlock(null);
+    },
+    [carouselAddCardBlock],
+  );
+
+  const handleEditCard = useCallback((block: ContentBlock, card: CarouselCard) => {
+    if (block.type !== 'carousel') return;
+    if (card.blockType === 'link' || card.blockType === 'whatsapp') {
+      setCarouselCardEditModalState({ block, card });
+      return;
+    }
+    setCardEditState({ block, card });
+  }, []);
+
+  const handleCardEditSave = useCallback((updatedCard: CarouselCard) => {
+    if (!cardEditState) return;
     setBlocks((prev) =>
       prev.map((b) =>
-        b.id === block.id && b.type === 'carousel'
-          ? { ...b, cards: [...b.cards, newCard] }
+        b.id === cardEditState.block.id && b.type === 'carousel'
+          ? { ...b, cards: b.cards.map((c) => (c.id === updatedCard.id ? updatedCard : c)) }
           : b,
       ),
     );
-  }, []);
+    setCardEditState(null);
+  }, [cardEditState]);
 
   const handleReorderCards = useCallback((_block: ContentBlock) => {
     console.log('Re-order cards');
   }, []);
+
+  const handleCarouselCardModalSave = useCallback((updatedCard: CarouselCard) => {
+    if (!carouselCardEditModalState) return;
+    setBlocks((prev) =>
+      prev.map((b) =>
+        b.id === carouselCardEditModalState.block.id && b.type === 'carousel'
+          ? { ...b, cards: b.cards.map((c) => (c.id === updatedCard.id ? updatedCard : c)) }
+          : b,
+      ),
+    );
+    setCarouselCardEditModalState(null);
+  }, [carouselCardEditModalState]);
+
+  const handleCarouselCardModalRemove = useCallback((cardToRemove: CarouselCard) => {
+    if (!carouselCardEditModalState) return;
+    setBlocks((prev) =>
+      prev.map((b) =>
+        b.id === carouselCardEditModalState.block.id && b.type === 'carousel'
+          ? { ...b, cards: b.cards.filter((c) => c.id !== cardToRemove.id) }
+          : b,
+      ),
+    );
+    setCarouselCardEditModalState(null);
+  }, [carouselCardEditModalState]);
+
+  const handleOpenWhatsAppDetailsForCard = useCallback(() => {
+    if (!carouselCardEditModalState) return;
+    setWhatsappModalCarouselContext({
+      block: carouselCardEditModalState.block,
+      card: carouselCardEditModalState.card,
+    });
+    setWhatsappModalOpen(true);
+  }, [carouselCardEditModalState]);
+
+  const handleWhatsappModalSave = useCallback(
+    (data: { phone_code: string; number: string; prefilled_message?: string }) => {
+      if (!whatsappModalCarouselContext) return;
+      const { block, card } = whatsappModalCarouselContext;
+      if (card) {
+        setBlocks((prev) =>
+          prev.map((b) =>
+            b.id === block.id && b.type === 'carousel'
+              ? {
+                  ...b,
+                  cards: b.cards.map((c) =>
+                    c.id === card.id
+                      ? { ...c, phone_code: data.phone_code, number: data.number, prefilled_message: data.prefilled_message }
+                      : c,
+                  ),
+                }
+              : b,
+          ),
+        );
+      } else {
+        const newCard: CarouselCard = {
+          id: `card-${Date.now()}`,
+          blockType: 'whatsapp',
+          title: 'WhatsApp',
+          phone_code: data.phone_code,
+          number: data.number,
+          prefilled_message: data.prefilled_message,
+        };
+        setBlocks((prev) =>
+          prev.map((b) =>
+            b.id === block.id && b.type === 'carousel'
+              ? { ...b, cards: [...b.cards, newCard] }
+              : b,
+          ),
+        );
+      }
+      setWhatsappModalCarouselContext(null);
+      setWhatsappModalOpen(false);
+    },
+    [whatsappModalCarouselContext],
+  );
 
   return (
     <div className="flex flex-col min-h-full">
@@ -193,6 +335,7 @@ export default function CreateSuperProfilePage() {
               onVisibleChange={handleVisibleChange}
               onAnalytics={handleAnalytics}
               onAddCard={handleAddCard}
+              onEditCard={handleEditCard}
               onReorderCards={handleReorderCards}
             />
           ))}
@@ -206,6 +349,63 @@ export default function CreateSuperProfilePage() {
           console.log('Quick add:', id);
           setQuickAddsOpen(false);
         }}
+      />
+
+      <CarouselAddCardModal
+        open={carouselAddCardBlock != null}
+        onOpenChange={(open) => !open && setCarouselAddCardBlock(null)}
+        onSelect={handleCarouselAddCardSelect}
+      />
+
+      <CarouselCardEditSheet
+        open={cardEditState != null}
+        onOpenChange={(open) => !open && setCardEditState(null)}
+        card={cardEditState?.card ?? null}
+        onSave={handleCardEditSave}
+      />
+
+      {carouselCardEditModalState && (
+        <CarouselCardEditModal
+          open={carouselCardEditModalState != null}
+          onOpenChange={(open) => !open && setCarouselCardEditModalState(null)}
+          block={carouselCardEditModalState.block}
+          card={
+            (() => {
+              const b = blocks.find((x) => x.id === carouselCardEditModalState.block.id && x.type === 'carousel');
+              if (b && b.type === 'carousel') {
+                const c = b.cards.find((x) => x.id === carouselCardEditModalState.card.id);
+                return c ?? carouselCardEditModalState.card;
+              }
+              return carouselCardEditModalState.card;
+            })()
+          }
+          onSave={handleCarouselCardModalSave}
+          onRemove={handleCarouselCardModalRemove}
+          onOpenWhatsAppDetails={
+            carouselCardEditModalState.card.blockType === 'whatsapp' ? handleOpenWhatsAppDetailsForCard : undefined
+          }
+        />
+      )}
+
+      <WhatsAppChatLinkModal
+        open={whatsappModalOpen && whatsappModalCarouselContext != null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setWhatsappModalOpen(false);
+            setWhatsappModalCarouselContext(null);
+          }
+        }}
+        block={null}
+        initialData={
+          whatsappModalCarouselContext?.card
+            ? {
+                phone_code: whatsappModalCarouselContext.card.phone_code ?? '',
+                number: whatsappModalCarouselContext.card.number ?? '',
+                prefilled_message: whatsappModalCarouselContext.card.prefilled_message,
+              }
+            : undefined
+        }
+        onSave={handleWhatsappModalSave}
       />
     </div>
   );

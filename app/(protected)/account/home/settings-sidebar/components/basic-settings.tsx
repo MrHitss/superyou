@@ -1,294 +1,174 @@
-'use client';
+ 'use client';
+ 
+ import { useState } from 'react';
+ import { AvatarInput } from '@/partials/common/avatar-input';
+ import { Button } from '@/components/ui/button';
+ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+ import { Input } from '@/components/ui/input';
+ import { Label } from '@/components/ui/label';
+ import { Switch } from '@/components/ui/switch';
+ import { Checkbox } from '@/components/ui/checkbox';
+ 
+ const BasicSettings = () => {
+   const [firstName, setFirstName] = useState('Hitesh');
+   const [lastName, setLastName] = useState('Varyani');
+   const [displayName, setDisplayName] = useState('Hitesh Varyani');
+   const [headline, setHeadline] = useState('');
+   const [bio, setBio] = useState('');
+   const [socialLinksEnabled, setSocialLinksEnabled] = useState(true);
+ 
+   const [registeredEmail, setRegisteredEmail] = useState('hiteshkv75@gmail.com');
+   const [registeredPhone, setRegisteredPhone] = useState('+91 91669-15305');
+ 
+   const [supportEmail, setSupportEmail] = useState('');
+   const [supportPhone, setSupportPhone] = useState('');
+   const [supportContactMethod, setSupportContactMethod] = useState<'email' | 'phone' | 'both'>('both');
+ 
+   const [offersUpdates, setOffersUpdates] = useState(true);
+   const [notifyPurchaseEmail, setNotifyPurchaseEmail] = useState(true);
+   const [notifyPurchaseWhatsApp, setNotifyPurchaseWhatsApp] = useState(true);
+ 
+   return (
+     <>
+       <Card>
+         <CardHeader>
+           <CardTitle>Basic information</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <div>
+               <Label className="text-sm">First name</Label>
+               <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-2" />
+             </div>
+             <div>
+               <Label className="text-sm">Last name</Label>
+               <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="mt-2" />
+             </div>
+           </div>
+         </CardContent>
+       </Card>
 
-import { useState } from 'react';
-import { AvatarInput } from '@/partials/common/avatar-input';
-import { format } from 'date-fns';
-import { CalendarDays, CalendarIcon, Clock3 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DateInput, TimeField } from '@/components/ui/datefield';
-import { Input, InputAddon, InputGroup } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+       <Card>
+         <CardHeader>
+           <CardTitle>About me info</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <p className="text-sm text-muted-foreground mb-4">
+             This is the default 'About me' info we show as a card on all your products. Talk about yourself and link your social accounts.
+           </p>
+           <div className="flex items-start gap-6">
+             <div>
+               <Label className="text-sm">Your image</Label>
+               <div className="mt-2">
+                 <AvatarInput />
+               </div>
+             </div>
+             <div className="grow">
+               <Label className="text-sm">Name</Label>
+               <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="mt-2" />
+               <Label className="text-sm mt-4">Headline</Label>
+               <Input value={headline} onChange={(e) => setHeadline(e.target.value)} className="mt-2" />
+               <Label className="text-sm mt-4">Bio</Label>
+               <textarea
+                 value={bio}
+                 onChange={(e) => setBio(e.target.value)}
+                 className="w-full mt-2 p-3 border rounded-md min-h-[120px]"
+               />
+               <div className="flex items-center justify-between mt-4">
+                 <div className="flex items-center gap-4">
+                   <Label className="text-sm">Social Media Links</Label>
+                   <Switch checked={socialLinksEnabled} onCheckedChange={(v) => setSocialLinksEnabled(!!v)} />
+                 </div>
+                 <Button variant="ghost" size="sm">Set up</Button>
+               </div>
+               <div className="mt-4">
+                 <Label className="text-sm">Book a session with me</Label>
+                 <div className="mt-2">
+                   <Button size="sm">Set up</Button>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </CardContent>
+       </Card>
 
-const BasicSettings = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date(1984, 0, 20));
-  const [nameInput, setNameInput] = useState('Jason Tatum');
-  const [companyInput, setCompanyInput] = useState('KeenThemes');
-  const [phoneInput, setPhoneInput] = useState('');
+       <Card>
+         <CardHeader>
+           <CardTitle>Signin information</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <Label className="text-sm">Registered email</Label>
+           <div className="flex items-center gap-3 mt-2">
+             <Input value={registeredEmail} onChange={(e) => setRegisteredEmail(e.target.value)} />
+             <Button variant="outline" size="sm">Verify</Button>
+           </div>
 
-  // Docs: https://www.reui.io/docs/date-picker#date--time
-  const today = new Date();
-  const [availabilityDate, setAvailabilityDate] = useState<Date | undefined>(
-    today,
-  );
-  const [availabilityTime, setAvailabilityTime] = useState<string | undefined>(
-    '10:00',
-  );
-  const availabilityTimeSlots = [
-    { time: '09:00', available: false },
-    { time: '09:30', available: false },
-    { time: '10:00', available: true },
-    { time: '10:30', available: true },
-    { time: '11:00', available: true },
-    { time: '11:30', available: true },
-    { time: '12:00', available: false },
-    { time: '12:30', available: true },
-    { time: '13:00', available: true },
-    { time: '13:30', available: true },
-    { time: '14:00', available: true },
-    { time: '14:30', available: false },
-    { time: '15:00', available: false },
-    { time: '15:30', available: true },
-    { time: '16:00', available: true },
-    { time: '16:30', available: true },
-    { time: '17:00', available: true },
-    { time: '17:30', available: true },
-    { time: '18:00', available: true },
-    { time: '18:30', available: true },
-    { time: '19:00', available: true },
-    { time: '19:30', available: true },
-    { time: '20:00', available: true },
-    { time: '20:30', available: true },
-    { time: '21:00', available: true },
-    { time: '21:30', available: true },
-    { time: '22:00', available: true },
-    { time: '22:30', available: true },
-    { time: '23:00', available: true },
-    { time: '23:30', available: true },
-    { time: '24:00', available: true },
-  ];
+           <Label className="text-sm mt-4">Registered phone number</Label>
+           <div className="flex items-center gap-3 mt-2">
+             <Input value={registeredPhone} onChange={(e) => setRegisteredPhone(e.target.value)} />
+             <Button variant="ghost" size="sm">Edit</Button>
+           </div>
+         </CardContent>
+       </Card>
 
-  return (
-    <Card className="pb-2.5">
-      <CardHeader id="basic_settings">
-        <CardTitle>Basic Settings</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-5">
-        <div className="flex items-center flex-wrap gap-2.5">
-          <Label className="flex w-full max-w-56">Photo</Label>
-          <div className="flex items-center justify-between flex-wrap grow gap-2.5">
-            <span className="text-sm text-secondary-foreground">
-              150x150px JPEG, PNG Image
-            </span>
-            <AvatarInput />
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-            <Label className="flex w-full items-center gap-1 max-w-56">
-              Name
-            </Label>
-            <Input
-              type="text"
-              defaultValue={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-            <Label className="flex w-full items-center gap-1 max-w-56">
-              Birth Date
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  mode="input"
-                  variant="outline"
-                  id="date"
-                  className={cn(
-                    'w-full data-[state=open]:border-primary',
-                    !date && 'text-muted-foreground',
-                  )}
-                >
-                  <CalendarDays className="-ms-0.5" />
-                  {date ? format(date, 'LLL dd, y') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="single" // Single date selection
-                  defaultMonth={date}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={1}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-            <Label className="flex w-full items-center gap-1 max-w-56">
-              Availability Date & Time
-            </Label>
-            {/*
-              Docs: https://www.reui.io/docs/date-picker#date--time
-            */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <div className="grow relative">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    mode="input"
-                    placeholder={!date}
-                    className="w-full"
-                  >
-                    <CalendarIcon />
-                    {date ? (
-                      format(date, 'PPP') +
-                      (availabilityTime ? ` - ${availabilityTime}` : '')
-                    ) : (
-                      <span>Pick a date and time</span>
-                    )}
-                  </Button>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <div className="flex max-sm:flex-col">
-                  <Calendar
-                    mode="single"
-                    selected={availabilityDate}
-                    onSelect={(newDate) => {
-                      if (newDate) {
-                        setAvailabilityDate(newDate);
-                        setAvailabilityTime(undefined);
-                      }
-                    }}
-                    className="p-2 sm:pe-5"
-                    disabled={[{ before: today }]}
-                  />
-                  <div className="relative w-full max-sm:h-48 sm:w-40">
-                    <div className="absolute inset-0 py-4 max-sm:border-t">
-                      <ScrollArea className="h-full sm:border-s">
-                        <div className="space-y-3">
-                          <div className="flex h-5 shrink-0 items-center px-5">
-                            <p className="text-sm font-medium">
-                              {date ? format(date, 'EEEE, d') : 'Pick a date'}
-                            </p>
-                          </div>
-                          <div className="grid gap-1.5 px-5 max-sm:grid-cols-2">
-                            {availabilityTimeSlots.map(
-                              ({ time: timeSlot, available }) => (
-                                <Button
-                                  key={timeSlot}
-                                  variant={
-                                    availabilityTime === timeSlot
-                                      ? 'primary'
-                                      : 'outline'
-                                  }
-                                  size="sm"
-                                  className="w-full"
-                                  onClick={() => setAvailabilityTime(timeSlot)}
-                                  disabled={!available}
-                                >
-                                  {timeSlot}
-                                </Button>
-                              ),
-                            )}
-                          </div>
-                        </div>
-                      </ScrollArea>
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-            <Label className="flex w-full items-center gap-1 max-w-56">
-              Company
-            </Label>
-            <Input
-              type="text"
-              defaultValue={companyInput}
-              onChange={(e) => setCompanyInput(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-            <Label className="flex w-full items-center gap-1 max-w-56">
-              Dismissal Time
-            </Label>
-            {/*
-              Docs: 
-              https://www.reui.io/docs/input#time
-              https://react-spectrum.adobe.com/react-aria/TimeField.html
-            */}
-            <InputGroup className="w-full">
-              <InputAddon mode="icon">
-                <Clock3 />
-              </InputAddon>
-              <TimeField>
-                <DateInput />
-              </TimeField>
-            </InputGroup>
-          </div>
-        </div>
-        <div className="w-full">
-          <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-            <Label className="flex w-full items-center gap-1 max-w-56">
-              Phone number
-            </Label>
-            <Input
-              type="text"
-              placeholder="Enter phone"
-              defaultValue={phoneInput}
-              onChange={(e) => setPhoneInput(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="flex items-center flex-wrap gap-2.5">
-          <Label className="flex w-full max-w-56">Visibility</Label>
-          <div className="grow">
-            <Select defaultValue="1">
-              <SelectTrigger>
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">Public</SelectItem>
-                <SelectItem value="2">Option 2</SelectItem>
-                <SelectItem value="3">Option 2</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="flex items-center flex-wrap gap-2.5">
-          <Label className="flex w-full max-w-56">Avaibality</Label>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="auto-update" className="text-sm">
-              Available to hire
-            </Label>
-            <Switch defaultChecked size="sm" />
-          </div>
-        </div>
-        <div className="flex justify-end pt-2.5">
-          <Button>Save Changes</Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+       <Card>
+         <CardHeader>
+           <CardTitle>Support Channel</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <Label className="text-sm">Email</Label>
+           <div className="flex items-center gap-3 mt-2">
+             <Input value={supportEmail} onChange={(e) => setSupportEmail(e.target.value)} />
+             <Button variant="outline" size="sm">Verify</Button>
+           </div>
+           <Label className="text-sm mt-4">Support phone number</Label>
+           <div className="flex items-center gap-3 mt-2">
+             <Input value={supportPhone} onChange={(e) => setSupportPhone(e.target.value)} />
+             <Button variant="outline" size="sm">Verify</Button>
+           </div>
+           <div className="mt-4">
+             <Label className="text-sm">How would you like your customers to reach out to you in case of queries?</Label>
+             <div className="mt-2 flex items-center gap-4">
+               <label className="flex items-center gap-2"><input type="radio" name="support_method" checked={supportContactMethod==='email'} onChange={() => setSupportContactMethod('email')} /> Via Email address</label>
+               <label className="flex items-center gap-2"><input type="radio" name="support_method" checked={supportContactMethod==='phone'} onChange={() => setSupportContactMethod('phone')} /> Via Phone number</label>
+               <label className="flex items-center gap-2"><input type="radio" name="support_method" checked={supportContactMethod==='both'} onChange={() => setSupportContactMethod('both')} /> Via Both</label>
+             </div>
+           </div>
+         </CardContent>
+       </Card>
 
-export { BasicSettings };
+       <Card>
+         <CardHeader>
+           <CardTitle>Notifications</CardTitle>
+         </CardHeader>
+         <CardContent>
+           <div className="mb-4">
+             <Label className="text-sm">Notify me about</Label>
+             <div className="mt-2">
+               <label className="flex items-center gap-2"><Checkbox checked={offersUpdates} onCheckedChange={(v) => setOffersUpdates(!!v)} />Offers and updates</label>
+               <div className="text-xs text-muted-foreground mt-1">Notify me about SuperProfile updates and offers</div>
+             </div>
+           </div>
+
+           <div>
+             <Label className="text-sm">Notify my contacts about</Label>
+             <div className="mt-2">
+               <div className="flex items-center justify-between">
+                 <div>
+                   <div className="text-sm font-medium">Any Purchase</div>
+                   <div className="text-xs text-muted-foreground">Notify customers when they make a purchase</div>
+                 </div>
+                 <div className="flex items-center gap-3">
+                   <label className="flex items-center gap-2"><Checkbox checked={notifyPurchaseEmail} onCheckedChange={(v) => setNotifyPurchaseEmail(!!v)} />Email</label>
+                   <label className="flex items-center gap-2"><Checkbox checked={notifyPurchaseWhatsApp} onCheckedChange={(v) => setNotifyPurchaseWhatsApp(!!v)} />WhatsApp</label>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </CardContent>
+       </Card>
+     </>
+   );
+ };
+ 
+ export { BasicSettings };

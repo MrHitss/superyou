@@ -1,17 +1,18 @@
 import { cn } from '@/lib/utils';
-import { LoaderCircleIcon } from 'lucide-react';
 
 export function ContentLoader({ className }: { className?: string }) {
   return (
     <div
-      className={cn('flex items-center justify-center grow w-full', className)}
+      className={cn('flex flex-col items-center justify-center grow w-full gap-2', className)}
     >
-      <div className="flex items-center gap-2.5">
-        <LoaderCircleIcon className="animate-spin text-muted-foreground opacity-50" />
-        <span className="text-muted-foreground font-medium text-sm">
-          Loading...
-        </span>
-      </div>
+      <img
+        src="/media/logo/SuperYouBioIcon.gif"
+        alt="Loading"
+        className="h-12 w-auto"
+      />
+      <span className="text-muted-foreground font-medium text-sm">
+        Loading...
+      </span>
     </div>
   );
 }

@@ -13,8 +13,10 @@ import {
   User,
   UserCircle,
   Users,
+  HelpCircle,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
+import { logout } from '@/lib/auth-api';
 import { useTheme } from 'next-themes';
 import { toAbsoluteUrl } from '@/lib/helpers';
 import { useLanguage } from '@/providers/i18n-provider';
@@ -45,6 +47,18 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
 
   const handleThemeToggle = (checked: boolean) => {
     setTheme(checked ? 'dark' : 'light');
+  };
+
+  const handleSignOut = async () => {
+    const token = session?.beeToken;
+    if (token) {
+      try {
+        await logout(token);
+      } catch {
+        // continue to local signOut even if BE logout fails
+      }
+    }
+    await signOut();
   };
 
   return (
@@ -83,98 +97,36 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
 
         <DropdownMenuSeparator />
 
-        {/* Menu Items */}
+        {/* Menu Items: only essential links */}
         <DropdownMenuItem asChild>
-          <Link
-            href="/public-profile/profiles/default"
-            className="flex items-center gap-2"
-          >
-            <UserCircle />
-            Public Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link
-            href="/account/home/user-profile"
-            className="flex items-center gap-2"
-          >
+          <Link href="/account/home/user-profile" className="flex items-center gap-2">
             <User />
             My Profile
           </Link>
         </DropdownMenuItem>
 
-        {/* My Account Submenu */}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="flex items-center gap-2">
-            <Settings />
-            My Account
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="w-48">
-            <DropdownMenuItem asChild>
-              <Link
-                href="/account/home/get-started"
-                className="flex items-center gap-2"
-              >
-                <Coffee />
-                Get Started
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/account/home/user-profile"
-                className="flex items-center gap-2"
-              >
-                <FileText />
-                My Profile
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/account/billing/basic"
-                className="flex items-center gap-2"
-              >
-                <CreditCard />
-                Billing
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/account/security/overview"
-                className="flex items-center gap-2"
-              >
-                <Shield />
-                Security
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/account/members/teams"
-                className="flex items-center gap-2"
-              >
-                <Users />
-                Members & Roles
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/account/integrations"
-                className="flex items-center gap-2"
-              >
-                <BetweenHorizontalStart />
-                Integrations
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-
         <DropdownMenuItem asChild>
-          <Link
-            href="https://devs.keenthemes.com"
+          <a
+            href="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
             <FileText />
-            Dev Forum
-          </Link>
+            Request Feature
+          </a>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <a
+            href="https://devs.keenthemes.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <HelpCircle />
+            Help & Support
+          </a>
         </DropdownMenuItem>
 
         {/* Language Submenu with Radio Group */}
@@ -246,7 +198,7 @@ export function DropdownMenuUser({ trigger }: { trigger: ReactNode }) {
             variant="outline"
             size="sm"
             className="w-full"
-            onClick={() => signOut()}
+            onClick={handleSignOut}
           >
             Logout
           </Button>

@@ -1,36 +1,31 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { prisma } from '@/lib/prisma';
 import authOptions from '@/app/api/auth/[...nextauth]/auth-options';
 
+/** Current user from session (SuperYou BE auth; no Prisma). */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session) {
+    if (!session?.user) {
       return NextResponse.json(
         { message: 'Unauthorized request' },
-        { status: 401 }, // Unauthorized
+        { status: 401 },
       );
     }
 
-    // Fetch the user based on the email in the session
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        role: true,
-      },
+    return NextResponse.json({
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      avatar: session.user.avatar,
+      status: session.user.status,
+      roleId: session.user.roleId,
+      role: session.user.roleName
+        ? { id: session.user.roleId, name: session.user.roleName }
+        : null,
+      profile_link: session.user.profile_link ?? null,
     });
-
-    // Check if record exists
-    if (!user) {
-      return NextResponse.json(
-        { message: 'Record not found. Someone might have deleted it already.' },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(user);
   } catch {
     return NextResponse.json(
       { message: 'Oops! Something went wrong. Please try again in a moment.' },

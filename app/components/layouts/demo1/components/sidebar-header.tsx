@@ -22,24 +22,24 @@ export function SidebarHeader() {
       <Link href="/">
         <div className="dark:hidden">
           <img
-            src={toAbsoluteUrl('/media/app/default-logo.svg')}
-            className="default-logo h-[22px] max-w-none"
+            src={toAbsoluteUrl('/media/logo/SYBSidebarLight.png')}
+            className="default-logo h-[45px] max-w-none"
             alt="Default Logo"
           />
           <img
-            src={toAbsoluteUrl('/media/app/mini-logo.svg')}
-            className="small-logo h-[22px] max-w-none"
+            src={toAbsoluteUrl('/media/logo/SuperYouBioIcon2.png')}
+            className="small-logo h-[35px] max-w-none"
             alt="Mini Logo"
           />
         </div>
         <div className="hidden dark:block">
           <img
-            src={toAbsoluteUrl('/media/app/default-logo-dark.svg')}
-            className="default-logo h-[22px] max-w-none"
+            src={toAbsoluteUrl('/media/logo/superyoubio-dark.png')}
+            className="default-logo h-[45px] max-w-none"
             alt="Default Dark Logo"
           />
           <img
-            src={toAbsoluteUrl('/media/app/mini-logo.svg')}
+            src={toAbsoluteUrl('/media/logo/SuperYouBioIcon2.png')}
             className="small-logo h-[22px] max-w-none"
             alt="Mini Logo"
           />

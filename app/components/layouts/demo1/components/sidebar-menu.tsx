@@ -44,11 +44,14 @@ export function SidebarMenu() {
   };
 
   const buildMenu = (items: MenuConfig): JSX.Element[] => {
+    // Show "Coming soon" badge for all top-level links except Dashboard and Store
     return items.map((item: MenuItem, index: number) => {
+      const isAlwaysActive = item.title === 'Dashboard' || item.title === 'Store';
       if (item.heading) {
         return buildMenuHeading(item, index);
-      } else if (item.disabled) {
-        return buildMenuItemRootDisabled(item, index);
+      } else if (!isAlwaysActive) {
+        // render as disabled with "Coming soon" badge
+        return buildMenuItemRootDisabled({ ...item, disabled: true }, index);
       } else {
         return buildMenuItemRoot(item, index);
       }
@@ -84,7 +87,7 @@ export function SidebarMenu() {
         >
           <Link
             href={item.path || '#'}
-            className="flex items-center justify-between grow gap-2"
+            className="flex items-center grow gap-2"
           >
             {item.icon && <item.icon data-slot="accordion-menu-icon" />}
             <span data-slot="accordion-menu-title">{item.title}</span>
@@ -108,7 +111,7 @@ export function SidebarMenu() {
         <span data-slot="accordion-menu-title">{item.title}</span>
         {item.disabled && (
           <Badge variant="secondary" size="sm" className="ms-auto me-[-10px]">
-            Soon
+            Coming soon
           </Badge>
         )}
       </AccordionMenuItem>

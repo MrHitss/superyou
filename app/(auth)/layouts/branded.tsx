@@ -27,7 +27,7 @@ export function BrandedLayout({ children }: { children: ReactNode }) {
           <div className="flex flex-col p-8 lg:p-16 gap-4">
             <Link href="/">
               <img
-                src={toAbsoluteUrl('/media/app/mini-logo.svg')}
+                src={toAbsoluteUrl('/media/logo/SuperYouBioIcon2.png')}
                 className="h-[28px] max-w-none"
                 alt=""
               />

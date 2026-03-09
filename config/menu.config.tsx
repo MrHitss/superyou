@@ -61,14 +61,12 @@ import { type MenuConfig } from './types';
 
 /** Sidebar menu — theme styling. All app routes use /orbit prefix. */
 export const MENU_SIDEBAR: MenuConfig = [
-  { title: 'Dashboard', path: '/orbit', icon: Home },
-        { title: 'Store', path: '/orbit/you', icon: Globe },
-        { title: 'Payments', path: '/orbit/payments', icon: CreditCard },
-        { title: 'Learn', path: '/orbit/learn', icon: GraduationCap },
-        { title: 'Audience', path: '/orbit/audience', icon: Users },
-        { title: 'Refer & Earn', path: '/orbit/refer-earn', icon: Gift },
-
-  
+  { title: 'Dashboard', path: '/account/home/dashboard', icon: Home },
+  { title: 'Store', path: '/orbit/you', icon: Globe },
+  { title: 'Payments', path: '/orbit/payments', icon: CreditCard },
+  { title: 'Learn', path: '/orbit/learn', icon: GraduationCap },
+  { title: 'Audience', path: '/orbit/audience', icon: Users },
+  { title: 'Refer & Earn', path: '/orbit/refer-earn', icon: Gift },
   // --- Commented out: theme demo menu (uncomment to restore) ---
   // {
   //   title: 'Dashboards',

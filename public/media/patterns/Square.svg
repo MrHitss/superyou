@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none">
+  <defs>
+    <pattern id="grid" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
+      <g clip-path="url(#clip0_16932_3104)">
+        <path d="M96 0H0V96H96V0Z" fill="#EE5522"/>
+        <path d="M96 0H48V48H96V0Z" fill="#D23D09" fill-opacity="0.6"/>
+        <path d="M48 48H0V96H48V48Z" fill="#D23D09" fill-opacity="0.6"/>
+        <path d="M48 14.4L0 0H96L48 14.4Z" fill="url(#paint0_linear_16932_3104)" fill-opacity="0.5"/>
+        <path d="M48 48L0 62.4V48H96V62.4L48 48Z" fill="url(#paint1_linear_16932_3104)" fill-opacity="0.5"/>
+      </g>
+    </pattern>
+    <linearGradient id="paint0_linear_16932_3104" x1="48" y1="15.84" x2="48" y2="-1.44" gradientUnits="userSpaceOnUse">
+      <stop stop-opacity="0"/>
+      <stop offset="1"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear_16932_3104" x1="48" y1="64.8" x2="48" y2="46.56" gradientUnits="userSpaceOnUse">
+      <stop stop-opacity="0"/>
+      <stop offset="1"/>
+    </linearGradient>
+    <clipPath id="clip0_16932_3104">
+      <rect width="96" height="96" fill="white"/>
+    </clipPath>
+  </defs>
+  <!-- Background rectangle that fills the entire viewport with the pattern -->
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+</svg>

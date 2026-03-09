@@ -22,6 +22,7 @@ import {
   ExternalServicesIntegrations,
   ExternalServicesManageApi,
 } from './components';
+import { StoreSettings } from './components/store-settings';
 
 const stickySidebarClasses: Record<string, string> = {
   'demo1-layout': 'top-[calc(var(--header-height)+1rem)]',
@@ -82,6 +83,7 @@ export function AccountSettingsSidebarContent() {
       )}
       <div className="flex flex-col items-stretch grow gap-5 lg:gap-7.5">
         <BasicSettings />
+        <StoreSettings />
         <AuthEmail />
         <AuthPassword />
         <AuthSocialSignIn />

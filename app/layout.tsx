@@ -18,9 +18,19 @@ import '@/components/keenicons/assets/styles.css';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Metronic',
-    default: 'Metronic', // a default is required when creating a template
-  }
+    template: '%s | SuperYou Bio',
+    default: 'SuperYou Bio',
+  },
+  description:
+    'SuperYou Bio — Create and manage your personal bio link page. One link, your whole story.',
+  icons: {
+    icon: '/media/logo/superyoubioicon.png',
+  },
+  openGraph: {
+    title: 'SuperYou Bio',
+    description:
+      'SuperYou Bio — Create and manage your personal bio link page. One link, your whole story.',
+  },
 };
 
 export default async function RootLayout({
@@ -35,6 +45,7 @@ export default async function RootLayout({
           'antialiased flex h-full text-base text-foreground bg-background',
           inter.className,
         )}
+        suppressHydrationWarning
       >
         <QueryProvider>
           <AuthProvider>
@@ -42,10 +53,12 @@ export default async function RootLayout({
               <ThemeProvider>
                 <I18nProvider>
                   <TooltipsProvider>
-                    <ModulesProvider>
-                      <Suspense>{children}</Suspense>
-                      <Toaster />
-                    </ModulesProvider>
+                <ModulesProvider>
+                  <div className="min-h-full w-full flex-1 flex flex-col">
+                    <Suspense>{children}</Suspense>
+                  </div>
+                  <Toaster />
+                </ModulesProvider>
                   </TooltipsProvider>
                 </I18nProvider>
               </ThemeProvider>

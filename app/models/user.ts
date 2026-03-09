@@ -1,9 +1,12 @@
-import { $Enums } from '@prisma/client';
 import { SystemSetting } from './system';
 
-// Enums
-export const UserStatus = $Enums.UserStatus;
-export type UserStatus = $Enums.UserStatus;
+// Enums (Prisma removed; kept for app types)
+export const UserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  BLOCKED: 'BLOCKED',
+} as const;
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
 // Models
 export interface User {

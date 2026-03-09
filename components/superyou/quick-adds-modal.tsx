@@ -8,10 +8,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
+  MessageCircle,
+  FileInput,
   LayoutGrid,
   Package,
   Magnet,
-  MessageCircle,
   Zap,
   FolderPlus,
   Calendar,
@@ -21,11 +22,16 @@ import {
   Lock,
 } from 'lucide-react';
 
-const QUICK_ADD_BUTTONS = [
-  { id: 'carousel', label: 'Carousel', icon: LayoutGrid },
+/** Blocks shown in Quick Adds (Carousel, WhatsApp, Form). Link is on main screen; rest coming later. */
+const QUICK_ADD_BLOCKS = [
+  { id: 'carousel', label: 'Carousel', description: 'Container for link/whatsapp/form blocks', icon: LayoutGrid },
+  { id: 'whatsapp', label: 'WhatsApp', description: 'DM me on WhatsApp with optional prefilled message', icon: MessageCircle },
+  { id: 'form', label: 'Form (Lead Magnet)', description: 'Embed a lead form to capture leads', icon: FileInput },
+] as const;
+
+const QUICK_ADD_LINKS = [
   { id: 'existing_products', label: 'Existing Products', icon: Package },
   { id: 'lead_magnet', label: 'Lead Magnet', icon: Magnet },
-  { id: 'whatsapp', label: 'WhatsApp link', icon: MessageCircle },
   { id: 'referral', label: 'Referral Link', icon: Zap },
   { id: 'cj_affiliate', label: 'CJ Affiliate Link', icon: Zap, iconLabel: 'CJ' },
 ] as const;
@@ -83,47 +89,83 @@ export function QuickAddsModal({ open, onOpenChange, onSelect }: QuickAddsModalP
           <DialogTitle>Quick adds</DialogTitle>
         </DialogHeader>
 
-        {/* Quick add buttons */}
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-          {QUICK_ADD_BUTTONS.map((item) => (
-            <Button
-              key={item.id}
-              variant="outline"
-              className="flex h-24 flex-col gap-2"
-              onClick={() => onSelect?.(item.id)}
-            >
-              {'iconLabel' in item ? (
-                <span className="text-lg font-bold text-primary">{item.iconLabel}</span>
-              ) : (
-                <item.icon className="h-6 w-6" />
-              )}
-              <span className="text-xs">{item.label}</span>
-            </Button>
-          ))}
+        {/* Quick adds: Carousel, WhatsApp, Form (Lead Magnet) */}
+        <div>
+          {/* <h3 className="text-sm font-semibold">Quick adds</h3> */}
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            Add Carousel, WhatsApp, or a lead form to your profile
+          </p>
+          <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-3">
+            {QUICK_ADD_BLOCKS.map((block) => {
+              const Icon = block.icon;
+              return (
+                <Button
+                  key={block.id}
+                  variant="outline"
+                  className="flex h-auto min-w-0 flex-col items-start gap-2 overflow-hidden whitespace-normal p-4 text-left"
+                  onClick={() => onSelect?.(block.id)}
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="min-w-0 shrink-0 font-medium">{block.label}</span>
+                  <span className="w-full min-w-0 break-words text-left text-xs text-muted-foreground">{block.description}</span>
+                </Button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Create and sell */}
+        {/* Quick add links */}
+        {/* <div>
+          <h3 className="text-sm font-semibold">Quick add links</h3>
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {QUICK_ADD_LINKS.map((item) => (
+              <Button
+                key={item.id}
+                variant="outline"
+                className="flex h-20 flex-col gap-2"
+                onClick={() => onSelect?.(item.id)}
+              >
+                {'iconLabel' in item ? (
+                  <span className="text-lg font-bold text-primary">{item.iconLabel}</span>
+                ) : (
+                  <item.icon className="h-5 w-5" />
+                )}
+                <span className="text-xs">{item.label}</span>
+              </Button>
+            ))}
+          </div>
+        </div> */}
+
+        {/* Create and sell — Coming soon */}
         <div className="mt-6">
-          <h3 className="text-sm font-semibold">Create and sell</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold">Create and sell</h3>
+            <span className="rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+              Coming soon
+            </span>
+          </div>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Make money by selling products and services
           </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {CREATE_SELL_OPTIONS.map((opt) => (
-              <button
+              <div
                 key={opt.id}
-                type="button"
-                className="flex items-start gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-accent"
-                onClick={() => onSelect?.(opt.id)}
+                className="relative flex items-start gap-3 rounded-lg border border-border p-3 opacity-60"
               >
+                <span className="absolute right-2 top-2 rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                  Coming soon
+                </span>
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <opt.icon className="h-5 w-5" />
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 pr-20">
                   <p className="font-medium">{opt.title}</p>
-                  <p className="text-sm text-muted-foreground">{opt.description}</p>
+                  <p className="text-xs text-muted-foreground">{opt.description}</p>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>

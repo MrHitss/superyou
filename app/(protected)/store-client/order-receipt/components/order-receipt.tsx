@@ -26,16 +26,16 @@ export function OrderReceipt() {
             <div className="flex flex-col items-center gap-3 mb-5 lg:mb-9">
               <Link href="#" className="dark:hidden">
                 <img
-                  src={toAbsoluteUrl('/media/app/default-logo.svg')}
-                  className="default-logo h-[22px]"
+                  src={toAbsoluteUrl('/media/logo/SYBSidebarLight.png')}
+                  className="default-logo h-[45px]"
                   alt="image"
                 />
               </Link>
 
               <Link href="#" className="hidden dark:block">
                 <img
-                  src={toAbsoluteUrl('/media/app/default-logo-dark.svg')}
-                  className="default-logo h-[22px]"
+                  src={toAbsoluteUrl('/media/logo/superyoubio-dark.png')}
+                  className="default-logo h-[45px]"
                   alt="image"
                 />
               </Link>
