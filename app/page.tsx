@@ -69,10 +69,12 @@ const JSON_LD = {
  * Index: authenticated → /orbit, unauthenticated → landing (Framer iframe).
  */
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
-  if (session?.user) {
-    redirect('/orbit');
-  }
+  redirect('/orbit');
+  
+  // const session = await getServerSession(authOptions);
+  // if (session?.user) {
+  //   redirect('/orbit');
+  // }
   return (
     <>
       <script
