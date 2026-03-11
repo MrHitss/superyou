@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Share2, ChevronLeft, ChevronRight, Link2 } from 'lucide-react';
 import type {
@@ -234,7 +234,7 @@ function HeaderBlockRenderer({ block, blockStyle, fontFamily, darkTheme }: Block
   const title = (block.content?.title ?? block.content?.text ?? '') || 'Untitled';
   return (
     <p
-      className="mt-4 first:mt-2 mb-1.5 text-xs font-semibold uppercase tracking-wider"
+      className={cn('mt-4 first:mt-2 mb-1.5 text-xs font-semibold uppercase tracking-wider text-center')}
       style={{
         fontFamily,
         color: darkTheme ? 'rgba(255,255,255,0.8)' : bs.text_color || '#737373',
@@ -406,15 +406,31 @@ function CarouselCardPreview({
   );
 }
 
+const CAROUSEL_CARD_WIDTH = 140;
+const CAROUSEL_GAP = 12;
+const CAROUSEL_SCROLL_AMOUNT = CAROUSEL_CARD_WIDTH + CAROUSEL_GAP;
+
 function CarouselBlockRenderer({ block, buttonStyle, blockStyle, fontFamily, darkTheme }: BlockRendererProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const children = block.children ?? [];
   const content = block.content ?? {};
   const title = (content.title ?? block.content?.title ?? '') || 'Enter carousel title';
 
+  const scroll = (direction: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = direction === 'left' ? -CAROUSEL_SCROLL_AMOUNT : CAROUSEL_SCROLL_AMOUNT;
+    el.scrollBy({ left: amount, behavior: 'smooth' });
+  };
+
   return (
-    <div className="mt-4 first:mt-2 space-y-3" style={fontFamily ? { fontFamily } : undefined}>
-      <p className={cn('text-sm', darkTheme ? 'text-white/90' : 'text-neutral-500')}>{title}</p>
-      <div className="flex gap-3 overflow-x-auto pb-2 scroll-smooth [-webkit-overflow-scrolling:touch]">
+    <div className="mt-4 first:mt-2 min-w-0 space-y-3" style={fontFamily ? { fontFamily } : undefined}>
+      <p className={cn('text-center text-sm', darkTheme ? 'text-white/90' : 'text-neutral-500')}>{title}</p>
+      {/* Max 2 cards visible; container constrained so carousel doesn't expand pane, rest scroll */}
+      <div
+        ref={scrollRef}
+        className="max-w-[292px] flex gap-3 overflow-x-auto pb-2 scroll-smooth [-webkit-overflow-scrolling:touch]"
+      >
         {children.length > 0 ? (
           children.map((child) => (
             <CarouselCardPreview key={child.uuid} child={child} buttonStyle={buttonStyle} blockStyle={blockStyle} fontFamily={fontFamily} />
@@ -429,6 +445,7 @@ function CarouselBlockRenderer({ block, buttonStyle, blockStyle, fontFamily, dar
         <div className="flex justify-center gap-2">
           <button
             type="button"
+            onClick={() => scroll('left')}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm hover:bg-neutral-50"
             aria-label="Previous"
           >
@@ -436,6 +453,7 @@ function CarouselBlockRenderer({ block, buttonStyle, blockStyle, fontFamily, dar
           </button>
           <button
             type="button"
+            onClick={() => scroll('right')}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm hover:bg-neutral-50"
             aria-label="Next"
           >
@@ -559,7 +577,7 @@ export function PreviewPane({
       )}
 
       {/* Browser-style URL bar */}
-      <div className="relative z-10 flex shrink-0 items-center justify-between border-b border-neutral-200 bg-white/95 px-3 py-2 backdrop-blur-sm">
+      <div className="relative z-1 flex shrink-0 items-center justify-between border-b border-neutral-200 bg-white/95 px-3 py-2 backdrop-blur-sm">
         <span className="truncate text-xs text-neutral-500">{displayUrl}</span>
         <div className="flex items-center gap-1">
           <button
@@ -586,7 +604,7 @@ export function PreviewPane({
       {/* Scrollable content on theme background: profile then blocks (payload-driven; hidden when sensitive warning shown) */}
       {showContent && (
       <div
-        className="relative z-10 flex-1 min-h-0 overflow-auto px-4 pb-6 pt-4"
+        className="relative z-1 flex-1 min-h-0 overflow-auto px-4 pb-6 pt-4"
         style={fontFamily ? { fontFamily } : undefined}
       >
         {/* 1. Background (already on aside) → 2. Profile: avatar, name, bio, social → 3. Blocks */}
