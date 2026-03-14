@@ -46,7 +46,7 @@ export function SidebarMenu() {
   const buildMenu = (items: MenuConfig): JSX.Element[] => {
     // Show "Coming soon" badge for all top-level links except Dashboard and Store
     return items.map((item: MenuItem, index: number) => {
-      const isAlwaysActive = item.title === 'Dashboard' || item.title === 'Store';
+      const isAlwaysActive = item.title === 'Dashboard' || item.title === 'Store'||item.title==='Lead Magnet' || item.title === 'Courses';
       if (item.heading) {
         return buildMenuHeading(item, index);
       } else if (!isAlwaysActive) {

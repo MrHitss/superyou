@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSettings } from '@/providers/settings-provider';
 import { Footer } from './components/footer';
@@ -10,6 +11,10 @@ import { Sidebar } from './components/sidebar';
 export function Demo1Layout({ children }: { children: ReactNode }) {
   const isMobile = useIsMobile();
   const { settings, setOption } = useSettings();
+  const pathname = usePathname();
+  const isCreateCourseRoute = pathname.startsWith('/orbit/courses/create');
+  const hideHeader = isCreateCourseRoute;
+  const hideSidebar = isCreateCourseRoute;
 
   useEffect(() => {
     const bodyClass = document.body.classList;
@@ -31,8 +36,6 @@ export function Demo1Layout({ children }: { children: ReactNode }) {
 
     // Add a class to the body element
     bodyClass.add('demo1');
-    bodyClass.add('sidebar-fixed');
-    bodyClass.add('header-fixed');
 
     const timer = setTimeout(() => {
       bodyClass.add('layout-initialized');
@@ -49,12 +52,24 @@ export function Demo1Layout({ children }: { children: ReactNode }) {
     };
   }, []); // Runs only once on mount
 
+  useEffect(() => {
+    const bodyClass = document.body.classList;
+
+    bodyClass.toggle('sidebar-fixed', !hideSidebar);
+    bodyClass.toggle('header-fixed', !hideHeader);
+
+    return () => {
+      bodyClass.remove('sidebar-fixed');
+      bodyClass.remove('header-fixed');
+    };
+  }, [hideHeader, hideSidebar]);
+
   return (
     <>
-      {!isMobile && <Sidebar />}
+      {!isMobile && !hideSidebar && <Sidebar />}
 
       <div className="wrapper flex grow flex-col">
-        <Header />
+        {!hideHeader && <Header />}
 
         <main className="grow pt-5" role="content">
           {children}

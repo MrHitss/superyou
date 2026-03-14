@@ -35,6 +35,7 @@ import {
   Layout,
   LayoutGrid,
   LifeBuoy,
+  Magnet,
   MessageSquare,
   Monitor,
   Network,
@@ -67,6 +68,8 @@ export const MENU_SIDEBAR: MenuConfig = [
   { title: 'Learn', path: '/orbit/learn', icon: GraduationCap },
   { title: 'Audience', path: '/orbit/audience', icon: Users },
   { title: 'Refer & Earn', path: '/orbit/refer-earn', icon: Gift },
+  { title: 'Lead Magnet', path: '/orbit/lead-magnet', icon: Magnet },
+  { title: 'Courses', path: '/orbit/courses', icon: Book },
   // --- Commented out: theme demo menu (uncomment to restore) ---
   // {
   //   title: 'Dashboards',
